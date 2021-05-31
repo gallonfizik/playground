@@ -23,7 +23,7 @@ class MinimumUnits:
         self._totals = {}
         for _unit in units:
             self._totals[self._key(_unit)] = Sum()
-        self._smallest_unit = self.units[-1]
+        self._smallest_unit_key = self._key(self.units[-1])
 
     def __call__(self, number: int) -> MinimumUnits:
         for _unit in self.units:
@@ -32,10 +32,8 @@ class MinimumUnits:
             div, mod = divmod(number, _unit)
             number = mod
             self._totals[self._key(_unit)](div)
-            if div == 0:
-                continue
         if number != 0:
-            self._totals[self._key(self._smallest_unit)]((number + self._smallest_unit - 1) // self._smallest_unit)
+            self._totals[self._smallest_unit_key](1)
         return self
 
     def __repr__(self):
