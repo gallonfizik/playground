@@ -1,50 +1,54 @@
 from __future__ import annotations
 
 
-class Sum:
-    def __init__(self) -> None:
-        self.sum = 0
+class UnitSet:
+    def __init__(self, unit_set: dict):
+        self.unit_set = {}
+        for k, v in unit_set.items():
+            if v != 0:
+                self.unit_set[k] = v
 
-    def __call__(self, value: int) -> Sum:
-        self.sum = self.sum + value
-        return self
-
-    def __repr__(self) -> str:
-        return repr(self.sum)
-
-    def get(self):
-        return self.sum
+    def __repr__(self):
+        return repr(self.unit_set)
 
 
 class MinimumUnits:
     def __init__(self, units: list) -> None:
         self.units = units
         self.units.sort(reverse=True)
-        self.totals = {}
-        for _unit in units:
-            self.totals[self._key(_unit)] = Sum()
         self._smallest_unit_key = self._key(self.units[-1])
 
-    def __call__(self, number: int) -> MinimumUnits:
+    def __call__(self, number: int) -> UnitSet:
+        result = {}
+
         for _unit in self.units:
             if number == 0:
                 break
             div, mod = divmod(number, _unit)
             number = mod
-            self.totals[self._key(_unit)](div)
+            result[self._key(_unit)] = div
         if number != 0:
-            self.totals[self._smallest_unit_key](1)
-        return self
-
-    def __repr__(self):
-        non_zero_sums = {}
-        for k, v in self.totals.items():
-            if v.get() != 0:
-                non_zero_sums[k] = v
-        return repr(non_zero_sums)
+            result[self._smallest_unit_key] = 1
+        return UnitSet(result)
 
     def _key(self, unit: int):
         return str(unit)
+
+
+class Totals:
+    def __init__(self):
+        self.totals = {}
+
+    def add(self, material: str, unit_set: UnitSet):
+        if material not in self.totals.keys():
+            self.totals[material] = {}
+        for k, v in unit_set.unit_set.items():
+            if v == 0:
+                pass
+            if k not in self.totals[material].keys():
+                self.totals[material][k] = v
+            else:
+                self.totals[material][k] = self.totals[material][k] + v
 
 
 if __name__ == '__main__':
@@ -53,12 +57,31 @@ if __name__ == '__main__':
         "ceramics": MinimumUnits([800, 320, 40])
     }
 
-    requests = {
-        "metals": [3200 - 3000, 2880 - 2000],
-        "ceramics": [2280 - 1600, 1]
-    }
+    requests = [
+        {
+            "metals": 2400,
+            "ceramics": 7650
+        },
+        {
+            "metals": 0,
+            "ceramics": 9450-6776
+        },
+        # {
+        #     "metals": 2400,
+        #     "ceramics": 7650
+        # }
+    ]
 
-    for material, requests_for_material, accumulator in zip(requests.keys(), requests.values(), minimum_units.values()):
-        for request in requests_for_material:
-            accumulator(request)
-        print("{}: {}".format(material, repr(accumulator)))
+    totals = Totals()
+
+    for request in requests:
+        response = {}
+        for material, request_for_material in request.items():
+            minimum_unit_for_material = minimum_units[material](request_for_material)
+            response[material] = minimum_unit_for_material
+            totals.add(material, minimum_unit_for_material)
+            print('{} {} <== {}'.format(material, request_for_material, minimum_unit_for_material))
+
+    print('Totals: ')
+    for material, total in totals.totals.items():
+        print("{}: {}".format(material, repr(total)))

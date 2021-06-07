@@ -7,7 +7,7 @@ class MyTestCase(unittest.TestCase):
     def test_given_request_is_0_then_result_is_0(self):
         instance = self._instance()
 
-        result = instance(0).totals
+        result = instance(0).unit_set
 
         for _, total in result.items():
             self.assertEqual(0, total.get())
@@ -15,27 +15,18 @@ class MyTestCase(unittest.TestCase):
     def test_given_request_is_less_than_minimum_unit_then_result_is_1(self):
         instance = self._instance()
 
-        result = instance(2).totals
+        result = instance(2).unit_set
 
-        self.assertEqual(0, result['100'].get())
-        self.assertEqual(1, result['10'].get())
+        self.assertNotIn('100', result.keys())
+        self.assertEqual(1, result['10'])
 
     def test_request_is_larger_than_maximum_unit(self):
         instance = self._instance()
 
-        result = instance(234).totals
+        result = instance(234).unit_set
 
-        self.assertEqual(2, result['100'].get())
-        self.assertEqual(4, result['10'].get())
-
-    def test_results_from_subsequent_calls_are_accumulated(self):
-        instance = self._instance()
-
-        # note that result is different than that from a call(510)
-        result = instance(205)(305).totals
-
-        self.assertEqual(5, result['100'].get())
-        self.assertEqual(2, result['10'].get())
+        self.assertEqual(2, result['100'])
+        self.assertEqual(1, result['10'])
 
     def _instance(self):
         return MinimumUnits([10, 100])
