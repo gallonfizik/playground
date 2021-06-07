@@ -26,7 +26,11 @@ class MinimumUnits:
                 break
             div, mod = divmod(number, _unit)
             number = mod
-            result[self._key(_unit)] = div
+            if (_unit - number) < self.units[-1]:
+                result[self._key(_unit)] = div + 1
+                return UnitSet(result)
+            else:
+                result[self._key(_unit)] = div
         if number != 0:
             result[self._smallest_unit_key] = 1
         return UnitSet(result)

@@ -26,7 +26,15 @@ class MyTestCase(unittest.TestCase):
         result = instance(234).unit_set
 
         self.assertEqual(2, result['100'])
-        self.assertEqual(1, result['10'])
+        self.assertEqual(4, result['10'])
+
+    def test_use_larger_unit_if_remainder_is_less_than_smallest_unit(self):
+        instance = self._instance()
+
+        result = instance(191).unit_set
+
+        self.assertEqual(2, result['100'])
+        self.assertNotIn('10', result)
 
     def _instance(self):
         return MinimumUnits([10, 100])
