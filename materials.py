@@ -3,21 +3,21 @@ from __future__ import annotations
 
 class MinimumUnits:
     def __init__(self, units: list) -> None:
-        self.units = units
-        self.units.sort(reverse=True)
-        self._smallest_unit_key = self._key(self.units[-1])
+        self._units = units
+        self._units.sort(reverse=True)
+        self._smallest_unit_key = self._key(self._units[-1])
 
     def __call__(self, number: int) -> dict:
         result = {}
 
-        for _unit in self.units:
+        for _unit in self._units:
             if number == 0:
                 break
             div, mod = divmod(number, _unit)
             number = mod
             if div == 0:
                 continue
-            if (_unit - number) < self.units[-1]:
+            if (_unit - number) < self._units[-1]:
                 result[self._key(_unit)] = div + 1
                 return result
             else:
