@@ -3,7 +3,7 @@ import unittest
 from materials import MinimumUnits
 
 
-class MyTestCase(unittest.TestCase):
+class MinimumUnitsTest(unittest.TestCase):
     def test_given_request_is_0_then_result_is_0(self):
         instance = self._instance()
 

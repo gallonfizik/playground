@@ -5,7 +5,8 @@ class MinimumUnits:
     def __init__(self, units: list) -> None:
         self._units = units
         self._units.sort(reverse=True)
-        self._smallest_unit_key = self._key(self._units[-1])
+        self._smallest_unit = self._units[-1]
+        self._smallest_unit_key = self._key(self._smallest_unit)
 
     def __call__(self, number: int) -> dict:
         result = {}
@@ -14,14 +15,9 @@ class MinimumUnits:
             if number == 0:
                 break
             div, mod = divmod(number, _unit)
-            number = mod
-            if div == 0:
-                continue
-            if (_unit - number) < self._units[-1]:
-                result[self._key(_unit)] = div + 1
-                return result
-            else:
-                result[self._key(_unit)] = div
+            count_for_unit, number = self._get_count_for_unit_and_remainder(_unit, div, mod)
+            if count_for_unit != 0:
+                result[self._key(_unit)] = count_for_unit
         if number != 0:
             result[self._smallest_unit_key] = 1
         return result
@@ -29,21 +25,28 @@ class MinimumUnits:
     def _key(self, unit: int):
         return str(unit)
 
+    def _get_count_for_unit_and_remainder(self, unit, div, remainder):
+        if div == 0:
+            return 0, remainder
+        if (unit - remainder) < self._smallest_unit:
+            return div + 1, 0
+        else:
+            return div, remainder
+
 
 class Totals:
     def __init__(self):
         self.totals = {}
 
-    def add(self, material: str, unit_set: dict):
-        if material not in self.totals.keys():
-            self.totals[material] = {}
-        for k, v in unit_set.items():
-            if v == 0:
-                pass
-            if k not in self.totals[material].keys():
-                self.totals[material][k] = v
+    def add(self, _material: str, units: dict):
+        if _material not in self.totals.keys():
+            self.totals[_material] = {}
+        for k, v in units.items():
+            assert (v != 0)
+            if k not in self.totals[_material].keys():
+                self.totals[_material][k] = v
             else:
-                self.totals[material][k] = self.totals[material][k] + v
+                self.totals[_material][k] = self.totals[_material][k] + v
 
 
 if __name__ == '__main__':
