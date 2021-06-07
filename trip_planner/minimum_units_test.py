@@ -1,6 +1,6 @@
 import unittest
 
-from materials import MinimumUnits
+from .minimum_units import MinimumUnits
 
 
 class MinimumUnitsTest(unittest.TestCase):
