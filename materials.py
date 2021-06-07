@@ -1,24 +1,13 @@
 from __future__ import annotations
 
 
-class UnitSet:
-    def __init__(self, unit_set: dict):
-        self.unit_set = {}
-        for k, v in unit_set.items():
-            if v != 0:
-                self.unit_set[k] = v
-
-    def __repr__(self):
-        return repr(self.unit_set)
-
-
 class MinimumUnits:
     def __init__(self, units: list) -> None:
         self.units = units
         self.units.sort(reverse=True)
         self._smallest_unit_key = self._key(self.units[-1])
 
-    def __call__(self, number: int) -> UnitSet:
+    def __call__(self, number: int) -> dict:
         result = {}
 
         for _unit in self.units:
@@ -26,14 +15,16 @@ class MinimumUnits:
                 break
             div, mod = divmod(number, _unit)
             number = mod
+            if div == 0:
+                continue
             if (_unit - number) < self.units[-1]:
                 result[self._key(_unit)] = div + 1
-                return UnitSet(result)
+                return result
             else:
                 result[self._key(_unit)] = div
         if number != 0:
             result[self._smallest_unit_key] = 1
-        return UnitSet(result)
+        return result
 
     def _key(self, unit: int):
         return str(unit)
@@ -43,10 +34,10 @@ class Totals:
     def __init__(self):
         self.totals = {}
 
-    def add(self, material: str, unit_set: UnitSet):
+    def add(self, material: str, unit_set: dict):
         if material not in self.totals.keys():
             self.totals[material] = {}
-        for k, v in unit_set.unit_set.items():
+        for k, v in unit_set.items():
             if v == 0:
                 pass
             if k not in self.totals[material].keys():
@@ -69,11 +60,7 @@ if __name__ == '__main__':
         {
             "metals": 0,
             "ceramics": 9450-6776
-        },
-        # {
-        #     "metals": 2400,
-        #     "ceramics": 7650
-        # }
+        }
     ]
 
     totals = Totals()
